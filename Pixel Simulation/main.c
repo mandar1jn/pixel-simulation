@@ -249,9 +249,11 @@ static void UpdateWater(int x, int y)
 	{
 	case 0:
 		if (TryMove(x, y, 1, 0)) return;
+		if (TryMove(x, y, -1, 0)) return;
 		break;
 	case 1:
 		if (TryMove(x, y, -1, 0)) return;
+		if (TryMove(x, y, 1, 0)) return;
 		break;
 	}
 	return;
