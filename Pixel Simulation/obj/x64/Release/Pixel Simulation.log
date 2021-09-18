@@ -1,0 +1,9 @@
+﻿  main.c
+C:\Users\Erik de Vlaam\Desktop\pixel simulation\Pixel Simulation\main.c(46,15): warning C4013: 'HasPixel' undefined; assuming extern returning int
+C:\Users\Erik de Vlaam\Desktop\pixel simulation\Pixel Simulation\main.c(92,1): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\Erik de Vlaam\Desktop\pixel simulation\Pixel Simulation\main.c(124,18): warning C4244: 'function': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\Erik de Vlaam\Desktop\pixel simulation\Pixel Simulation\main.c(211,1): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Erik de Vlaam\Desktop\pixel simulation\Pixel Simulation\main.c(213,1): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Erik de Vlaam\Desktop\pixel simulation\Pixel Simulation\main.c(229,40): warning C4305: '*=': truncation from 'double' to 'float'
+C:\Users\Erik de Vlaam\Desktop\pixel simulation\Pixel Simulation\main.c(245,40): warning C4305: '*=': truncation from 'double' to 'float'
+  Pixel Simulation.vcxproj -> C:\Users\Erik de Vlaam\Desktop\pixel simulation\bin\Release\Pixel Simulation.exe

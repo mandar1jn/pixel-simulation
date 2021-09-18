@@ -1,0 +1,7 @@
+bin/
+build/
+./Pixel Simulation/obj/
+*.sln
+*.vcxproj
+*.vcxproj.*
+.vs/

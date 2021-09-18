@@ -1,0 +1,5 @@
+﻿  main.c
+C:\Users\Erik de Vlaam\Desktop\pixel simulation\Pixel Simulation\main.c(20,29): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
+C:\Users\Erik de Vlaam\Desktop\pixel simulation\Pixel Simulation\main.c(20,41): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
+C:\Users\Erik de Vlaam\Desktop\pixel simulation\Pixel Simulation\main.c(58,8): warning C4101: 'pixel': unreferenced local variable
+  Pixel Simulation.vcxproj -> C:\Users\Erik de Vlaam\Desktop\pixel simulation\bin\Debug.DLL\Pixel Simulation.exe
