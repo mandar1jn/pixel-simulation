@@ -1,6 +1,6 @@
 bin/
 build/
-./Pixel Simulation/obj/
+Pixel Simulation/obj/
 *.sln
 *.vcxproj
 *.vcxproj.*
