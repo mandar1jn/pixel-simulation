@@ -6,10 +6,10 @@
 #include <time.h>
 #include "raymath.h"
 
-static Pixel* pixels = { 0 };
+static Pixel *pixels = { 0 };
 
 const float gravity = 1.98f;
-int simulationSpeed = 1;
+static int simulationSpeed = 1;
 
 const int width = 800;
 const int height = 600;
@@ -23,14 +23,15 @@ static void WriteData(int id, Pixel pixel);
 static void UpdateSand(int x, int y);
 static void UpdateWater(int x, int y);
 static bool InFrame(int x, int y);
-bool TryCreate(int x, int y, Pixel pixel);
-bool GetRandomBool();
-void PlaceInSquare(int size, Pixel pixel);
-void UpdateVelocity(int x, int y);
-void ResetPixels();
+static bool TryCreate(int x, int y, Pixel pixel);
+static bool GetRandomBool();
+static void PlaceInSquare(int size, Pixel pixel);
+static void UpdateVelocity(int x, int y);
+static void ResetPixels();
+bool HasPixel(int x, int y);
 static bool right = true;
 
-void Update()
+static void Update()
 {
 	if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
 	{
@@ -105,12 +106,12 @@ void Update()
 	}
 }
 
-bool GetRandomBool()
+static bool GetRandomBool()
 {
 	return rand() % 2;
 }
 
-void ResetPixels()
+static void ResetPixels()
 {
 	for (int y = 0; y < height; y++)
 	{
@@ -121,12 +122,12 @@ void ResetPixels()
 	}
 }
 
-bool HasPixel(int x, int y)
+static bool HasPixel(int x, int y)
 {
 	return (pixels[GetId(x, y)].type != EMPTY);
 }
 
-bool TryMove(int x, int y, int xOffset, int yOffset)
+static bool TryMove(int x, int y, int xOffset, int yOffset)
 {
 	Pixel pixel = pixels[GetId(x, y)];
 
@@ -135,7 +136,7 @@ bool TryMove(int x, int y, int xOffset, int yOffset)
 
 	bool moved = false;
 
-	int velocity = round(pixel.velocity);
+	int velocity = (int)pixel.velocity;
 
 	for (int i = 1; i < velocity + 1; i++)
 	{
@@ -157,7 +158,7 @@ bool TryMove(int x, int y, int xOffset, int yOffset)
 	return moved;
 }
 
-bool TryCreate(int x, int y, Pixel pixel)
+static bool TryCreate(int x, int y, Pixel pixel)
 {
 	if (!InFrame(x, y)) return false;
 	if (HasPixel(x, y)) return false;
@@ -167,7 +168,7 @@ bool TryCreate(int x, int y, Pixel pixel)
 
 int main()
 {
-	srand(time(NULL));
+	srand((unsigned int)time((time_t)NULL));
 	InitWindow(width, height, "Pixel Simulation");
 	SetTargetFPS(60);
 	pixels = MemAlloc(width * height * sizeof(Pixel));
@@ -205,16 +206,16 @@ static int GetId(int x, int y)
 
 static void WriteData(int id, Pixel pixel)
 {
+	pixel.id = id;
 	pixels[id] = pixel;
 	return;
 }
 
 void UpdateVelocity(int x, int y)
 {
-	Pixel pixel = pixels[GetId(x, y)];
-	pixel.velocity += gravity * GetFrameTime();
-	pixel.velocity = Clamp(pixel.velocity, -10, 10);
-	WriteData(GetId(x, y), pixel);
+	Pixel *pixel = &pixels[GetId(x, y)];
+	pixel->velocity += gravity * GetFrameTime();
+	pixel->velocity = Clamp(pixel->velocity, -10, 10);
 }
 
 static Pixel empty()
@@ -253,9 +254,9 @@ static bool InFrame(int x, int y)
 void PlaceInSquare(int size, Pixel pixel)
 {
 	Vector2 mousePos = GetMousePosition();
-	for (int i = mousePos.x - ((size - 1) / 2); i < mousePos.x + ((size - 1) / 2); i++)
+	for (int i = (int)(mousePos.x - ((size - 1) / 2)); i < mousePos.x + ((size - 1) / 2); i++)
 	{
-		for (int j = mousePos.y - ((size - 1) / 2); j < mousePos.y + ((size - 1) / 2); j++)
+		for (int j = (int)(mousePos.y - ((size - 1) / 2)); j < mousePos.y + ((size - 1) / 2); j++)
 		{
 			TryCreate(i, j, pixel);
 		}
@@ -264,30 +265,29 @@ void PlaceInSquare(int size, Pixel pixel)
 
 static void UpdateSand(int x, int y)
 {
-	pixels[GetId(x, y)].updated = true;
+	Pixel *pixel = &pixels[GetId(x, y)];
+	pixel->updated = true;
 
-	int id = GetId(x, y + 1);
-	if(TryMove(x, y, 0, 1)) return;
+	TryMove(x, y, 0, 1);
 	if (TryMove(x, y, -1, 1)) return;
 	if (TryMove(x, y, 1, 1)) return;
-	Pixel pixel = pixels[GetId(x, y)];
-	pixel.velocity = pixel.velocity *= 0.2f;
-	if (pixel.velocity < 1) pixel.velocity = 1;
+	pixel->velocity = pixel->velocity *= 0.2f;
+	if (pixel->velocity < 1) pixel->velocity = 1;
 
 	return;
 }
 
 static void UpdateWater(int x, int y)
 {
-	pixels[GetId(x, y)].updated = true;
+	Pixel *pixel = &pixels[GetId(x, y)];
+	pixel->updated = true;
 
-	if (TryMove(x, y, 0, 1)) return;
+	TryMove(x, y, 0, 1);
 	if (TryMove(x, y, -1, 1)) return;
 	if (TryMove(x, y, 1, 1)) return;
 
-	Pixel pixel = pixels[GetId(x, y)];
-	pixel.velocity = pixel.velocity *= 0.2f;
-	if (pixel.velocity < 1) pixel.velocity = 1;
+	pixel->velocity = pixel->velocity *= 0.2f;
+	if (pixel->velocity < 1) pixel->velocity = 1;
 
 	bool right = GetRandomBool();
 
@@ -301,7 +301,5 @@ static void UpdateWater(int x, int y)
 		if (TryMove(x, y, -1, 0)) return;
 		if (TryMove(x, y, 1, 0)) return;
 	}
-
-
 	return;
 }
