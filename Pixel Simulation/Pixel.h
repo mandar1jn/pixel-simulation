@@ -12,7 +12,6 @@ typedef struct Pixel
 	int id;
 	PixelType type;
 	Color color;
-	float lifetime;
 	float velocity;
 	bool updated;
 } Pixel;

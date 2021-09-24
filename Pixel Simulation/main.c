@@ -9,6 +9,7 @@
 static Pixel* pixels = { 0 };
 
 const float gravity = 1.98f;
+int simulationSpeed = 1;
 
 const int width = 800;
 const int height = 600;
@@ -26,6 +27,8 @@ bool TryCreate(int x, int y, Pixel pixel);
 bool GetRandomBool();
 void PlaceInSquare(int size, Pixel pixel);
 void UpdateVelocity(int x, int y);
+void ResetPixels();
+static bool right = true;
 
 void Update()
 {
@@ -39,22 +42,65 @@ void Update()
 		PlaceInSquare(50, sand());
 	}
 
-	for (int y = height - 1; y > 0; y--)
+	if (IsKeyDown(KEY_UP))
 	{
-		for (int x = width - 1; x > 0; x--)
+		simulationSpeed += 1;
+	}
+	if (IsKeyDown(KEY_DOWN))
+	{
+		simulationSpeed = simulationSpeed - 1;
+		if (simulationSpeed < 0)
 		{
-			if(HasPixel(x, y)) UpdateVelocity(x, y);
-			Pixel pixel = pixels[GetId(x, y)];
-			if (pixel.updated) continue;
-			switch (pixel.type)
+			simulationSpeed = 0;
+		}
+	}
+
+	if (simulationSpeed > 0)
+	{
+		for (int i = 0; i < simulationSpeed; i++)
+		{
+			for (int y = height - 1; y >= 0; y--)
 			{
-			case SAND:
-				UpdateSand(x, y);
-				break;
-			case WATER:
-				UpdateWater(x, y);
-				break;
+				if (right)
+				{
+					for (int x = 0; x < width; x++)
+					{
+						if (HasPixel(x, y)) UpdateVelocity(x, y);
+						Pixel pixel = pixels[GetId(x, y)];
+						if (pixel.updated) continue;
+						switch (pixel.type)
+						{
+						case SAND:
+							UpdateSand(x, y);
+							break;
+						case WATER:
+							UpdateWater(x, y);
+							break;
+						}
+					}
+					right = !right;
+				}
+				else
+				{
+					for (int x = width - 1; x > 0; x--)
+					{
+						if (HasPixel(x, y)) UpdateVelocity(x, y);
+						Pixel pixel = pixels[GetId(x, y)];
+						if (pixel.updated) continue;
+						switch (pixel.type)
+						{
+						case SAND:
+							UpdateSand(x, y);
+							break;
+						case WATER:
+							UpdateWater(x, y);
+							break;
+						}
+					}
+					right = !right;
+				}
 			}
+			ResetPixels();
 		}
 	}
 }
@@ -66,9 +112,9 @@ bool GetRandomBool()
 
 void ResetPixels()
 {
-	for (int y = height - 1; y > 0; y--)
+	for (int y = 0; y < height; y++)
 	{
-		for (int x = width - 1; x > 0; x--)
+		for (int x = 0; x < width; x++)
 		{
 			pixels[GetId(x, y)].updated = false;
 		}
@@ -148,7 +194,6 @@ int main()
 			}
 		}
 		EndDrawing();
-		ResetPixels();
 	}
 	CloseWindow();
 }
@@ -226,7 +271,7 @@ static void UpdateSand(int x, int y)
 	if (TryMove(x, y, -1, 1)) return;
 	if (TryMove(x, y, 1, 1)) return;
 	Pixel pixel = pixels[GetId(x, y)];
-	pixel.velocity = pixel.velocity *= 0.2;
+	pixel.velocity = pixel.velocity *= 0.2f;
 	if (pixel.velocity < 1) pixel.velocity = 1;
 
 	return;
@@ -236,25 +281,27 @@ static void UpdateWater(int x, int y)
 {
 	pixels[GetId(x, y)].updated = true;
 
-	int id = GetId(x, y + 1);
 	if (TryMove(x, y, 0, 1)) return;
 	if (TryMove(x, y, -1, 1)) return;
 	if (TryMove(x, y, 1, 1)) return;
 
 	Pixel pixel = pixels[GetId(x, y)];
-	pixel.velocity = pixel.velocity *= 0.2;
+	pixel.velocity = pixel.velocity *= 0.2f;
 	if (pixel.velocity < 1) pixel.velocity = 1;
 
-	switch (GetRandomBool())
+	bool right = GetRandomBool();
+
+	if (right)
 	{
-	case 0:
 		if (TryMove(x, y, 1, 0)) return;
 		if (TryMove(x, y, -1, 0)) return;
-		break;
-	case 1:
-		if (TryMove(x, y, -1, 0)) return;
-		if (TryMove(x, y, 1, 0)) return;
-		break;
 	}
+	else
+	{
+		if (TryMove(x, y, -1, 0)) return;
+		if (TryMove(x, y, 1, 0)) return;
+	}
+
+
 	return;
 }
