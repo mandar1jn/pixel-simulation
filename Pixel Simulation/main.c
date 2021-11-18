@@ -287,7 +287,7 @@ static void UpdateWater(int x, int y)
 	if (TryMove(x, y, 1, 1)) return;
 
 	pixel->velocity = pixel->velocity *= 0.2f;
-	if (pixel->velocity < 1) pixel->velocity = 1;
+	if (pixel->velocity < 20) pixel->velocity = 20;
 
 	bool right = GetRandomBool();
 
